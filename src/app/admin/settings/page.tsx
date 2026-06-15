@@ -146,151 +146,149 @@ export default function AdminSettings() {
         
         {/* 1. PAYMENTS TAB */}
         {activeTab === 'payments' && (
-          <div className="space-y-4 animate-fadeIn">
+          <div className="space-y-6 animate-fadeIn">
 
-              {/* Disbursement Mode Selector */}
-              <div className="space-y-5">
-                <div>
-                  <h5 className="font-bold text-neutral-800 text-xs uppercase tracking-wider">Funds Disbursement Mode</h5>
-                  <p className="text-[10px] text-neutral-400 mt-0.5">Where will customer payments land? This is shown on the checkout page so customers know where to send money.</p>
+            {/* Disbursement Mode Selector */}
+            <div className="space-y-5">
+              <div>
+                <h5 className="font-bold text-neutral-800 text-xs uppercase tracking-wider">Funds Disbursement Mode</h5>
+                <p className="text-[10px] text-neutral-400 mt-0.5">Where will customer payments land? This is shown on the checkout page so customers know where to send money.</p>
+              </div>
+
+              {/* Mode cards */}
+              <div className="grid grid-cols-3 gap-3">
+                {[
+                  { value: 'till', label: 'M-Pesa Till', desc: 'Buy Goods & Services till number' },
+                  { value: 'paybill', label: 'Paybill', desc: 'Send Money → Pay Bill (business)' },
+                  { value: 'bank_account', label: 'Bank Account', desc: 'Bank-linked Paybill + account no.' },
+                ].map((mode) => (
+                  <button
+                    key={mode.value}
+                    type="button"
+                    onClick={() => handleValueChange('disbursement_mode', mode.value)}
+                    className={`p-3 rounded-xl border-2 text-left transition-all cursor-pointer ${
+                      (localSettings.disbursement_mode || 'till') === mode.value
+                        ? 'border-[#D63F6F] bg-[#D63F6F]/5'
+                        : 'border-neutral-200 hover:border-neutral-400'
+                    }`}
+                  >
+                    <span className={`font-bold text-[11px] block ${
+                      (localSettings.disbursement_mode || 'till') === mode.value ? 'text-[#D63F6F]' : 'text-neutral-700'
+                    }`}>{mode.label}</span>
+                    <span className="text-[9px] text-neutral-400 leading-tight block mt-0.5">{mode.desc}</span>
+                  </button>
+                ))}
+              </div>
+
+              {/* Conditional fields */}
+              {(localSettings.disbursement_mode || 'till') === 'till' && (
+                <div className="space-y-1 max-w-xs">
+                  <label className="text-[10px] font-bold text-neutral-500 uppercase">Till Number</label>
+                  <input
+                    type="text"
+                    value={localSettings.mpesa_till_number || ''}
+                    onChange={(e) => handleValueChange('mpesa_till_number', e.target.value)}
+                    placeholder="e.g. 543210"
+                    className="w-full bg-[#F7F7F8] border border-neutral-300 rounded-lg py-2.5 px-3 text-xs focus:outline-none focus:border-[#D63F6F] focus:ring-1 focus:ring-[#D63F6F] placeholder-neutral-500"
+                  />
+                  <p className="text-[9px] text-neutral-400">M-Pesa Buy Goods &amp; Services till number</p>
                 </div>
+              )}
 
-                {/* Mode cards */}
-                <div className="grid grid-cols-3 gap-3">
-                  {[
-                    { value: 'till', label: 'M-Pesa Till', desc: 'Buy Goods & Services till number' },
-                    { value: 'paybill', label: 'Paybill', desc: 'Send Money → Pay Bill (business)' },
-                    { value: 'bank_account', label: 'Bank Account', desc: 'Bank-linked Paybill + account no.' },
-                  ].map((mode) => (
-                    <button
-                      key={mode.value}
-                      type="button"
-                      onClick={() => handleValueChange('disbursement_mode', mode.value)}
-                      className={`p-3 rounded-xl border-2 text-left transition-all cursor-pointer ${
-                        (localSettings.disbursement_mode || 'till') === mode.value
-                          ? 'border-[#D63F6F] bg-[#D63F6F]/5'
-                          : 'border-neutral-200 hover:border-neutral-400'
-                      }`}
-                    >
-                      <span className={`font-bold text-[11px] block ${
-                        (localSettings.disbursement_mode || 'till') === mode.value ? 'text-[#D63F6F]' : 'text-neutral-700'
-                      }`}>{mode.label}</span>
-                      <span className="text-[9px] text-neutral-400 leading-tight block mt-0.5">{mode.desc}</span>
-                    </button>
-                  ))}
-                </div>
-
-                {/* Conditional fields */}
-                {(localSettings.disbursement_mode || 'till') === 'till' && (
-                  <div className="space-y-1 max-w-xs">
-                    <label className="text-[10px] font-bold text-neutral-500 uppercase">Till Number</label>
+              {(localSettings.disbursement_mode === 'paybill' || localSettings.disbursement_mode === 'bank_account') && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold text-neutral-500 uppercase">
+                      {localSettings.disbursement_mode === 'bank_account' ? 'Bank Paybill Number' : 'Paybill Business Number'}
+                    </label>
                     <input
                       type="text"
-                      value={localSettings.mpesa_till_number || ''}
-                      onChange={(e) => handleValueChange('mpesa_till_number', e.target.value)}
-                      placeholder="e.g. 543210"
+                      value={localSettings.mpesa_paybill_number || ''}
+                      onChange={(e) => handleValueChange('mpesa_paybill_number', e.target.value)}
+                      placeholder={localSettings.disbursement_mode === 'bank_account' ? 'e.g. 400200 (Equity), 522522 (KCB)' : 'e.g. 247247'}
                       className="w-full bg-[#F7F7F8] border border-neutral-300 rounded-lg py-2.5 px-3 text-xs focus:outline-none focus:border-[#D63F6F] focus:ring-1 focus:ring-[#D63F6F] placeholder-neutral-500"
                     />
-                    <p className="text-[9px] text-neutral-400">M-Pesa Buy Goods & Services till number</p>
+                    <p className="text-[9px] text-neutral-400">
+                      {localSettings.disbursement_mode === 'bank_account'
+                        ? "Your bank's M-Pesa Paybill number"
+                        : 'The business Paybill number customers pay to'}
+                    </p>
                   </div>
-                )}
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-bold text-neutral-500 uppercase">
+                      {localSettings.disbursement_mode === 'bank_account' ? 'Bank Account Number' : 'Account Reference'}
+                    </label>
+                    <input
+                      type="text"
+                      value={localSettings.mpesa_paybill_account || ''}
+                      onChange={(e) => handleValueChange('mpesa_paybill_account', e.target.value)}
+                      placeholder={localSettings.disbursement_mode === 'bank_account' ? 'e.g. 0012345678' : 'e.g. PlottwearOrders'}
+                      className="w-full bg-[#F7F7F8] border border-neutral-300 rounded-lg py-2.5 px-3 text-xs focus:outline-none focus:border-[#D63F6F] focus:ring-1 focus:ring-[#D63F6F] placeholder-neutral-500"
+                    />
+                    <p className="text-[9px] text-neutral-400">
+                      {localSettings.disbursement_mode === 'bank_account'
+                        ? 'Your bank account number (the account reference)'
+                        : 'Account reference customers enter when paying'}
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
 
-                {(localSettings.disbursement_mode === 'paybill' || localSettings.disbursement_mode === 'bank_account') && (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-1">
-                      <label className="text-[10px] font-bold text-neutral-500 uppercase">
-                        {localSettings.disbursement_mode === 'bank_account' ? 'Bank Paybill Number' : 'Paybill Business Number'}
-                      </label>
-                      <input
-                        type="text"
-                        value={localSettings.mpesa_paybill_number || ''}
-                        onChange={(e) => handleValueChange('mpesa_paybill_number', e.target.value)}
-                        placeholder={localSettings.disbursement_mode === 'bank_account' ? 'e.g. 400200 (Equity), 522522 (KCB)' : 'e.g. 247247'}
-                        className="w-full bg-[#F7F7F8] border border-neutral-300 rounded-lg py-2.5 px-3 text-xs focus:outline-none focus:border-[#D63F6F] focus:ring-1 focus:ring-[#D63F6F] placeholder-neutral-500"
-                      />
-                      <p className="text-[9px] text-neutral-400">
-                        {localSettings.disbursement_mode === 'bank_account'
-                          ? "Your bank's M-Pesa Paybill number"
-                          : 'The business Paybill number customers pay to'}
-                      </p>
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-[10px] font-bold text-neutral-500 uppercase">
-                        {localSettings.disbursement_mode === 'bank_account' ? 'Bank Account Number' : 'Account Reference'}
-                      </label>
-                      <input
-                        type="text"
-                        value={localSettings.mpesa_paybill_account || ''}
-                        onChange={(e) => handleValueChange('mpesa_paybill_account', e.target.value)}
-                        placeholder={localSettings.disbursement_mode === 'bank_account' ? 'e.g. 0012345678' : 'e.g. PlottwearOrders'}
-                        className="w-full bg-[#F7F7F8] border border-neutral-300 rounded-lg py-2.5 px-3 text-xs focus:outline-none focus:border-[#D63F6F] focus:ring-1 focus:ring-[#D63F6F] placeholder-neutral-500"
-                      />
-                      <p className="text-[9px] text-neutral-400">
-                        {localSettings.disbursement_mode === 'bank_account'
-                          ? 'Your bank account number (the account reference)'
-                          : 'Account reference customers enter when paying'}
-                      </p>
-                    </div>
+            {/* Payment Method Active Toggles */}
+            <div className="space-y-4 border-t border-neutral-200 pt-6">
+              <h5 className="font-bold text-neutral-800 text-xs uppercase tracking-wider">Active Payment Channels</h5>
+              <p className="text-[10px] text-neutral-400 mt-0.5">Toggle customer checkout payment options on/off storefront-wide.</p>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                {/* Cash on Delivery */}
+                <div className="flex items-center justify-between p-4 bg-neutral-50 border border-neutral-200 rounded-xl">
+                  <div>
+                    <span className="font-bold text-neutral-700 text-xs block">Cash On Delivery</span>
+                    <span className="text-[9px] text-neutral-400">Pay on receipt (COD)</span>
                   </div>
-                )}
-              </div>
-              
-              {/* Payment Method Active Toggles */}
-              <div className="space-y-4 border-t border-neutral-200 pt-6 mt-6 col-span-2">
-                <h5 className="font-bold text-neutral-800 text-xs uppercase tracking-wider">Active Payment Channels</h5>
-                <p className="text-[10px] text-neutral-400 mt-0.5">Toggle customer checkout payment options on/off storefront-wide.</p>
-                
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                  {/* Cash on Delivery */}
-                  <div className="flex items-center justify-between p-4 bg-neutral-50 border border-neutral-200 rounded-xl">
-                    <div>
-                      <span className="font-bold text-neutral-700 text-xs block">Cash On Delivery</span>
-                      <span className="text-[9px] text-neutral-400">Pay on receipt (COD)</span>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => togglePaymentMethod('cod')}
-                      className={`w-11 h-6 flex items-center rounded-full p-1 cursor-pointer transition-colors ${
-                        paymentMethods.cod ? 'bg-[#D63F6F] justify-end' : 'bg-neutral-300 justify-start'
-                      }`}
-                    >
-                      <span className="bg-white w-4 h-4 rounded-full shadow-md" />
-                    </button>
-                  </div>
+                  <button
+                    type="button"
+                    onClick={() => togglePaymentMethod('cod')}
+                    className={`w-11 h-6 flex items-center rounded-full p-1 cursor-pointer transition-colors ${
+                      paymentMethods.cod ? 'bg-[#D63F6F] justify-end' : 'bg-neutral-300 justify-start'
+                    }`}
+                  >
+                    <span className="bg-white w-4 h-4 rounded-full shadow-md" />
+                  </button>
+                </div>
 
-                  {/* M-Pesa Manual Till */}
-                  <div className="flex items-center justify-between p-4 bg-neutral-50 border border-neutral-200 rounded-xl">
-                    <div>
-                      <span className="font-bold text-neutral-700 text-xs block">M-Pesa Manual Till</span>
-                      <span className="text-[9px] text-neutral-400">Buy Goods Paybill route</span>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => togglePaymentMethod('mpesa_till')}
-                      className={`w-11 h-6 flex items-center rounded-full p-1 cursor-pointer transition-colors ${
-                        paymentMethods.mpesa_till ? 'bg-[#D63F6F] justify-end' : 'bg-neutral-300 justify-start'
-                      }`}
-                    >
-                      <span className="bg-white w-4 h-4 rounded-full shadow-md" />
-                    </button>
+                {/* M-Pesa Manual Till */}
+                <div className="flex items-center justify-between p-4 bg-neutral-50 border border-neutral-200 rounded-xl">
+                  <div>
+                    <span className="font-bold text-neutral-700 text-xs block">M-Pesa Manual Till</span>
+                    <span className="text-[9px] text-neutral-400">Buy Goods Paybill route</span>
                   </div>
+                  <button
+                    type="button"
+                    onClick={() => togglePaymentMethod('mpesa_till')}
+                    className={`w-11 h-6 flex items-center rounded-full p-1 cursor-pointer transition-colors ${
+                      paymentMethods.mpesa_till ? 'bg-[#D63F6F] justify-end' : 'bg-neutral-300 justify-start'
+                    }`}
+                  >
+                    <span className="bg-white w-4 h-4 rounded-full shadow-md" />
+                  </button>
+                </div>
 
-                  {/* M-Pesa STK Push */}
-                  <div className="flex items-center justify-between p-4 bg-neutral-50 border border-neutral-200 rounded-xl">
-                    <div>
-                      <span className="font-bold text-neutral-700 text-xs block">M-Pesa STK Push</span>
-                      <span className="text-[9px] text-neutral-400">Express prompt push</span>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => togglePaymentMethod('stk_push')}
-                      className={`w-11 h-6 flex items-center rounded-full p-1 cursor-pointer transition-colors ${
-                        paymentMethods.stk_push ? 'bg-[#D63F6F] justify-end' : 'bg-neutral-300 justify-start'
-                      }`}
-                    >
-                      <span className="bg-white w-4 h-4 rounded-full shadow-md" />
-                    </button>
+                {/* M-Pesa STK Push */}
+                <div className="flex items-center justify-between p-4 bg-neutral-50 border border-neutral-200 rounded-xl">
+                  <div>
+                    <span className="font-bold text-neutral-700 text-xs block">M-Pesa STK Push</span>
+                    <span className="text-[9px] text-neutral-400">Express prompt push</span>
                   </div>
+                  <button
+                    type="button"
+                    onClick={() => togglePaymentMethod('stk_push')}
+                    className={`w-11 h-6 flex items-center rounded-full p-1 cursor-pointer transition-colors ${
+                      paymentMethods.stk_push ? 'bg-[#D63F6F] justify-end' : 'bg-neutral-300 justify-start'
+                    }`}
+                  >
+                    <span className="bg-white w-4 h-4 rounded-full shadow-md" />
+                  </button>
                 </div>
               </div>
             </div>
