@@ -650,7 +650,7 @@ export default function OrderCheckout() {
                         <input
                           type="tel"
                           required
-                          placeholder="e.g. 254712345678"
+                          placeholder="e.g. 0712345678"
                           value={phoneNumber}
                           onChange={(e) => setPhoneNumber(e.target.value)}
                           className="w-full bg-transparent border border-brand-grayMed border-opacity-35 px-4 py-3.5 text-sm focus:outline-none focus:border-brand-black rounded"
